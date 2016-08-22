@@ -1,0 +1,6 @@
+---
+# defaults file for filesystem
+vol_groups: false
+log_vol: false
+fs_creation: false
+mount_vol: false

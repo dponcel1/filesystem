@@ -1,0 +1,39 @@
+---
+# tasks file for filesystem
+
+- name: Create volume groups
+  action: "{{ item.vg_create }}"
+  args:
+   vg: "{{ item.volgrp_name }}"
+   pvs: "{{ item.phys_disk | default(omit) }}"
+   state: "{{ item.state | default(omit) }}"
+  with_items: "{{ vol_group }}" 
+  when: vol_groups
+
+- name: Create logical volumes
+  action: "{{ item.lv_create }}"
+  args:
+   vg: "{{ item.volgrp_name }}"
+   lv: "{{ item.lv_name }}"
+   size: "{{ item.size | default(omit) }}"
+   state: "{{ item.state | default(omit) }}"
+  with_items: "{{ lgcl_volume }}"
+  when: log_vol
+
+- name: Create filesystems
+  action: "{{ item.fs_create }}"
+  args:
+   fstype: "{{ item.fstype }}"
+   dev: "{{ item.dev }}"
+  with_items: "{{ create_filesystem }}"
+  when: fs_creation
+
+- name: Mount the volume
+  action: "{{ item.mnt_volume }}"
+  args:
+   name: "{{ item.name }}"
+   state: "{{ item.state }}"
+   src: "{{ item.src | default(omit) }}"
+   fstype: "{{ item.fstype | default(omit) }}"
+  with_items: "{{ mnt_volume }}"
+  when: mount_vol
